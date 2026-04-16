@@ -1,0 +1,47 @@
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<vector<string>> solveNQueens(int n) {
+        vector<vector<string>> res;
+        vector<string> board(n, string(n, '.'));
+        
+        // Trackers for safe placement
+        vector<bool> cols(n, false);
+        vector<bool> posDiag(2 * n, false); // r + c
+        vector<bool> negDiag(2 * n, false); // r - c + (n - 1) to avoid negative indices
+
+        backtrack(0, n, board, res, cols, posDiag, negDiag);
+        return res;
+    }
+
+private:
+    void backtrack(int r, int n, vector<string>& board, vector<vector<string>>& res,
+                   vector<bool>& cols, vector<bool>& posDiag, vector<bool>& negDiag) {
+        if (r == n) {
+            res.push_back(board);
+            return;
+        }
+
+        for (int c = 0; c < n; c++) {
+            // Check if column or diagonals are under attack
+            if (cols[c] || posDiag[r + c] || negDiag[r - c + n]) {
+                continue;
+            }
+
+            // Place Queen
+            board[r][c] = 'Q';
+            cols[c] = posDiag[r + c] = negDiag[r - c + n] = true;
+
+            // Recurse to the next row
+            backtrack(r + 1, n, board, res, cols, posDiag, negDiag);
+
+            // Backtrack: Remove Queen
+            board[r][c] = '.';
+            cols[c] = posDiag[r + c] = negDiag[r - c + n] = false;
+        }
+    }
+};
