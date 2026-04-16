@@ -1,0 +1,63 @@
+#include <cctype>
+#include <string>
+
+using namespace std;
+
+class Solution {
+public:
+    bool isNumber(string s) {
+        int i = 0;
+        int n = s.length();
+
+        // Skip leading whitespace (though problem says no whitespace)
+        while (i < n && isspace(s[i])) i++;
+        if (i == n) return false;
+
+        // Check for optional sign
+        if (s[i] == '+' || s[i] == '-') i++;
+
+        bool hasDigits = false;
+        bool hasDot = false;
+        bool hasExp = false;
+
+        // Check digits before exponent or dot
+        while (i < n && isdigit(s[i])) {
+            hasDigits = true;
+            i++;
+        }
+
+        // Check for dot
+        if (i < n && s[i] == '.') {
+            hasDot = true;
+            i++;
+            // Check digits after dot
+            while (i < n && isdigit(s[i])) {
+                hasDigits = true;
+                i++;
+            }
+        }
+
+        // Must have digits before or after dot
+        if (!hasDigits) return false;
+
+        // Check for exponent
+        if (i < n && (s[i] == 'e' || s[i] == 'E')) {
+            hasExp = true;
+            i++;
+            // Check for optional sign after exponent
+            if (i < n && (s[i] == '+' || s[i] == '-')) i++;
+            bool expHasDigits = false;
+            // Check digits after exponent
+            while (i < n && isdigit(s[i])) {
+                expHasDigits = true;
+                i++;
+            }
+            if (!expHasDigits) return false;
+        }
+
+        // Skip trailing whitespace (though problem says no whitespace)
+        while (i < n && isspace(s[i])) i++;
+
+        return i == n;
+    }
+};
