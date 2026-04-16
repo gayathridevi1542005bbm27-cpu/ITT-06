@@ -1,0 +1,56 @@
+#include <vector>
+#include <string>
+#include <climits>
+
+using namespace std;
+
+class Solution {
+public:
+    string minWindow(string s, string t) {
+        if (s.empty() || t.empty()) return "";
+
+        // Frequency map for characters in t
+        vector<int> targetCount(128, 0);
+        for (char c : t) targetCount[c]++;
+
+        // Window state
+        vector<int> windowCount(128, 0);
+        int required = 0;
+        for (int i : targetCount) if (i > 0) required++;
+        
+        int formed = 0; // Number of unique chars in t meeting required frequency in window
+        int left = 0, right = 0;
+        int minLen = INT_MAX, startIdx = 0;
+
+        while (right < s.length()) {
+            char c = s[right];
+            windowCount[c]++;
+
+            // If current char frequency matches target frequency
+            if (targetCount[c] > 0 && windowCount[c] == targetCount[c]) {
+                formed++;
+            }
+
+            // Try to contract the window from the left
+            while (left <= right && formed == required) {
+                c = s[left];
+                
+                // Update minimum window result
+                if (right - left + 1 < minLen) {
+                    minLen = right - left + 1;
+                    startIdx = left;
+                }
+
+                // Remove leftmost character and update 'formed' count
+                windowCount[c]--;
+                if (targetCount[c] > 0 && windowCount[c] < targetCount[c]) {
+                    formed--;
+                }
+                left++;
+            }
+            right++;
+        }
+
+        return minLen == INT_MAX ? "" : s.substr(startIdx, minLen);
+    }
+};
