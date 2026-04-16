@@ -1,0 +1,41 @@
+#include <vector>
+#include <string>
+#include <numeric>
+
+using namespace std;
+
+class Solution {
+public:
+    string getPermutation(int n, int k) {
+        vector<int> numbers;
+        vector<int> factorial(n, 1);
+        
+        // 1. Precompute factorials and store available numbers [1, 2, ..., n]
+        for (int i = 1; i < n; i++) {
+            factorial[i] = factorial[i - 1] * i;
+            numbers.push_back(i);
+        }
+        numbers.push_back(n);
+
+        // 2. Adjust k to be 0-indexed
+        k--;
+
+        string res = "";
+        for (int i = n; i > 0; i--) {
+            // How many permutations per starting digit? (n-1)!
+            int fact = factorial[i - 1];
+            
+            // Find index of the digit to use
+            int index = k / fact;
+            res += to_string(numbers[index]);
+            
+            // Remove the used digit from the list
+            numbers.erase(numbers.begin() + index);
+            
+            // Update k for the remaining digits
+            k %= fact;
+        }
+
+        return res;
+    }
+};
