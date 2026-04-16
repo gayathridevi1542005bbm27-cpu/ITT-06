@@ -1,0 +1,37 @@
+class Solution {
+public:
+    int totalNQueens(int n) {
+        int count = 0;
+        // done is a bitmask with n ones: (1 << n) - 1
+        int done = (1 << n) - 1;
+        solve(0, 0, 0, done, count);
+        return count;
+    }
+
+private:
+    void solve(int cols, int posDiag, int negDiag, int done, int& count) {
+        if (cols == done) {
+            count++;
+            return;
+        }
+
+        // Get all available positions in the current row
+        // ~ (cols | posDiag | negDiag) gives 1s for safe spots
+        // & done masks it to the board size
+        int possibleSlots = done & ~(cols | posDiag | negDiag);
+
+        while (possibleSlots > 0) {
+            // Get the rightmost available bit (the position to place a queen)
+            int bit = possibleSlots & -possibleSlots;
+            
+            // Remove that bit from available slots
+            possibleSlots -= bit;
+
+            // Recurse to the next row
+            // cols | bit: mark the column as occupied
+            // (posDiag | bit) << 1: shift left for the next row's diagonal
+            // (negDiag | bit) >> 1: shift right for the next row's diagonal
+            solve(cols | bit, (posDiag | bit) << 1, (negDiag | bit) >> 1, done, count);
+        }
+    }
+};
