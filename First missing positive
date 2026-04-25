@@ -1,0 +1,28 @@
+#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    int firstMissingPositive(std::vector<int>& nums) {
+        int n = nums.size();
+        
+        // 1. Cyclic Sort: Place each number x at index x-1
+        for (int i = 0; i < n; i++) {
+            // While the current number is in range [1, n] and NOT in its correct place
+            // We use a while loop because the swapped element also needs to be checked
+            while (nums[i] > 0 && nums[i] <= n && nums[nums[i] - 1] != nums[i]) {
+                std::swap(nums[i], nums[nums[i] - 1]);
+            }
+        }
+        
+        // 2. Find the first index i where nums[i] is not i+1
+        for (int i = 0; i < n; i++) {
+            if (nums[i] != i + 1) {
+                return i + 1;
+            }
+        }
+        
+        // 3. If all numbers 1 to n are present, return n+1
+        return n + 1;
+    }
+};
